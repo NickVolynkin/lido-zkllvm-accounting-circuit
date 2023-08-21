@@ -2,12 +2,15 @@ name: tutorial_check
 
 on:
   push:
-    branches: [ master ]
+    branches:
+    - master
+    - circuit-implementation
+    - update-circuit-implementation
   pull_request:
 
 concurrency:
   group: ${{
-    ( github.ref == 'refs/heads/master' &&
+    ( (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/circuit-implementation') &&
     format('{0}/{1}', github.run_id, github.run_attempt) )
     ||
     format('{0}/{1}', github.workflow, github.ref) }}

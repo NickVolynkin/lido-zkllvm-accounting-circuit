@@ -91,9 +91,9 @@ compile() {
         mkdir -p "$REPO_ROOT/build"
         cd "$REPO_ROOT/build"
         cmake -DCIRCUIT_ASSEMBLY_OUTPUT=TRUE ..
-        VERBOSE=1 make template
+        VERBOSE=1 make circuit
         cd -
-        check_file_exists "$REPO_ROOT/build/src/template.ll"
+        check_file_exists "$REPO_ROOT/build/src/circuit.ll"
     fi
 }
 
@@ -115,7 +115,7 @@ build_constraint() {
         cd "$REPO_ROOT/build"
         assigner \
           -b src/template.ll \
-          -i ../src/main-input.json \
+          -i ../src/circuit.inp \
           -c template.crct \
           -t template.tbl \
           -e pallas
@@ -140,7 +140,7 @@ build_circuit_params() {
         cd "$REPO_ROOT/build"
         transpiler \
           -m gen-gate-argument \
-          -i ../src/main-input.json \
+          -i ../src/circuit.inp \
           -t template.tbl \
           -c template.crct \
           -o template \
@@ -151,7 +151,7 @@ build_circuit_params() {
         # todo: replace with gen-circuit-paramsg
         transpiler \
           -m gen-circuit-params \
-          -i ../src/main-input.json \
+          -i ../src/circuit.inp \
           -t template.tbl \
           -c template.crct \
           -o template
@@ -192,8 +192,8 @@ build_statement() {
 }
 
 # Prove the circuit with particular input.
-# See the input files at:
-# ./src/main-input.json
+# See the input example at:
+# ./src/circuit.inp
 # https://github.com/NilFoundation/zkllvm-template/#step-3-produce-and-verify-a-proof-locally
 prove() {
     if [ "$USE_DOCKER" = true ] ; then
@@ -218,7 +218,7 @@ prove() {
         cd "$REPO_ROOT"
         proof-generator \
             --circuit_input="$REPO_ROOT/build/template.json" \
-            --public_input="$REPO_ROOT/src/main-input.json" \
+            --public_input="$REPO_ROOT/src/circuit.inp" \
             --proof_out="$REPO_ROOT/build/template/proof.bin"
         check_file_exists "$REPO_ROOT/build/template/proof.bin"
     fi
